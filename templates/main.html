@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <script>
+    function speedUpdate(speed) {
+        document.querySelector('#selected-speed').value = speed;
+    }
+
+    function sizeUpdate(size) {
+        document.querySelector('#selected-size').value = size / 100;
+    }
+
+    function stepsUpdate(steps) {
+        document.querySelector('#selected-steps').value = steps;
+    }
+    </script>
+    <style type="text/css">
+        .tg .tg-5rj3{background-color:#0000ff;color:#ffffff;font-weight:bold;}
+        .tg .tg-j7ib{background-color:#00ffff;font-weight:bold;}
+        .tg .tg-8w33{background-color:#008080;color:#ffffff;font-weight:bold;}
+        .tg .tg-sfim{background-color:#ff69b4;font-weight:bold;}
+        .tg .tg-er9f{background-color:#00ff00;font-weight:bold;}
+        .tg .tg-cxf6{background-color:#8b4513;color:#ffffff;font-weight:bold;}
+        .tg .tg-ktpr{background-color:#808000;color:#ffffff;font-weight:bold;}
+        .tg .tg-s05f{background-color:#ff00ff;font-weight:bold;}
+        .tg .tg-eezr{background-color:#000080;color:#ffffff;font-weight:bold;}
+        .tg .tg-6y75{background-color:#000000;color:#ffffff;font-weight:bold;}
+        .tg .tg-0lax{}
+        .tg .tg-sc5t{background-color:#800080;color:#ffffff;font-weight:bold;}
+        .tg .tg-v04h{background-color:#ff0000;color:#ffffff;font-weight:bold;}
+        .tg .tg-dpcp{background-color:#800000;color:#ffffff;font-weight:bold;}
+        .tg .tg-mbch{background-color:#ffa500;font-weight:bold;}
+        .tg .tg-ch3t{background-color:#008000;color:#ffffff;font-weight:bold;}
+        .tg .tg-1n3x{background-color:#ffff00;font-weight:bold;}
+    </style>
+
+    <div style="display: flex;">
+        <div style="width: 500; margin-left: 15px;">
+            <h1 class="title">Make your own RAT art</h1>
+            <form action="" method="post" novalidate>
+                {{ form.hidden_tag() }}
+
+                <div class="form-control">
+                    <p class="form-label">Set color amounts:</p>
+                <table class="tg table table-borderless table-sm">
+                    <colgroup>
+                        <col style="width: 80px">
+                        <col style="width: 80px">
+                        <col style="width: 80px">
+                        <col style="width: 80px">
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <td class="tg-6y75">Black</td>
+                        <td class="tg-0lax">{{ form.color.black(class_='form-control') }}</td>
+                        <td class="tg-cxf6">Brown</td>
+                        <td class="tg-0lax">{{ form.color.brown(size=5, class_='form-control') }}</td>
+                    <tr>
+                        <td class="tg-sc5t">Purple</td>
+                        <td class="tg-0lax">{{ form.color.purple(size=5, class_='form-control') }}</td>
+                        <td class="tg-s05f">Magenta</td>
+                        <td class="tg-0lax">{{ form.color.magenta(size=5, class_='form-control') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-v04h">Red</td>
+                        <td class="tg-0lax">{{ form.color.red(size=5, class_='form-control') }}</td>
+                        <td class="tg-sfim">Pink</td>
+                        <td class="tg-0lax">{{ form.color.pink(size=5, class_='form-control') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-dpcp">Maroon</td>
+                        <td class="tg-0lax">{{ form.color.maroon(size=5, class_='form-control') }}</td>
+                        <td class="tg-mbch">Orange</td>
+                        <td class="tg-0lax">{{ form.color.orange(size=5, class_='form-control') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-ktpr">Olive</td>
+                        <td class="tg-0lax">{{ form.color.olive(size=5, class_='form-control') }}</td>
+                        <td class="tg-1n3x">Yellow</td>
+                        <td class="tg-0lax">{{ form.color.yellow(size=5, class_='form-control') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-ch3t">Green</td>
+                        <td class="tg-0lax">{{ form.color.green(size=5, class_='form-control') }}</td>
+                        <td class="tg-er9f">Lime</td>
+                        <td class="tg-0lax">{{ form.color.lime(size=5, class_='form-control') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-8w33">Teal</td>
+                        <td class="tg-0lax">{{ form.color.teal(size=5, class_='form-control') }}</td>
+                        <td class="tg-j7ib">Cyan</td>
+                        <td class="tg-0lax">{{ form.color.cyan(size=5, class_='form-control') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="tg-eezr">Navy</td>
+                        <td class="tg-0lax">{{ form.color.navy(size=5, class_='form-control') }}</td>
+                        <td class="tg-5rj3">Blue</td>
+                        <td class="tg-0lax">{{ form.color.blue(size=5, class_='form-control') }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                </div>
+                <p></p>
+
+                <p class="form-control">
+                    {{ form.speed.label(class_='form-label') }}<br>
+                    {{ form.speed(oninput="speedUpdate(value)", class_='form-range') }}<br>
+                    <output for="speed" id="selected-speed">{{ form.speed.data }}</output>
+                </p>
+
+                <p class="form-control">
+                    {{ form.size.label(class_='form-label') }}<br>
+                    {{ form.size(oninput="sizeUpdate(value)", class_='form-range') }}<br>
+                    <output for="size" id="selected-size">{{ form.size.data / 100 }}</output>
+                </p>
+
+                <p class="form-control">
+                    {{ form.steps.label(class_='form-label') }}<br>
+                    {{ form.steps(oninput="stepsUpdate(value)", class_='form-range') }}<br>
+                    <output for="steps" id="selected-steps">{{ form.steps.data }}</output>
+                </p>
+
+                <div class="form-control">
+                    <p class="form-label">Width x Height</p>
+                    <div class="input-group mb-3">
+                        {{ form.width(size=12, class_='form-control') }}
+                        <span class="input-group-text">X</span>
+                        {{ form.height(size=12, class_='form-control') }}
+                    </div>
+                </div>
+
+                <p></p>
+                <div class="d-grid gap-2 col-6 mx-auto">{{ form.submit(class_='btn btn-primary') }}</div>
+            </form>
+        </div>
+        <div style="flex-grow: 1; margin-left: 30px;">
+            <img style="width: 100%;" src="static\ref1.png">
+        </div>
+    </div>
+
+
+{% endblock %}

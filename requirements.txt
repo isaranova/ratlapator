@@ -1,2 +1,4 @@
 pillow
 numpy
+pathos
+frozen-flask

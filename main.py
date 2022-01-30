@@ -1,16 +1,19 @@
-# This is a sample Python script.
+"""
+from canvas import Canvas
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    blue = (0, 0, 255, 255)
+    green = (0, 255, 0, 255)
+    red = (255, 0, 0, 255)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    canvas = Canvas(800, 800)
+    crop_box = [400, 300]
+
+    canvas.add_rat({blue: 250, green: 140, red: 255}, 5, 1.5)
+    canvas.print_rats()
+
+    for _ in range(4):
+        canvas.move_rats()
+        canvas.print_rats()
+        canvas.show_canvas_with_crop_box(crop_box)
+"""
