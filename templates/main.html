@@ -7,7 +7,7 @@
     }
 
     function sizeUpdate(size) {
-        document.querySelector('#selected-size').value = size / 100;
+        document.querySelector('#selected-size').value = size / 10;
     }
 
     function stepsUpdate(steps) {
@@ -111,7 +111,7 @@
                 <p class="form-control">
                     {{ form.size.label(class_='form-label') }}<br>
                     {{ form.size(oninput="sizeUpdate(value)", class_='form-range') }}<br>
-                    <output for="size" id="selected-size">{{ form.size.data / 100 }}</output>
+                    <output for="size" id="selected-size">{{ form.size.data / 10 }}</output>
                 </p>
 
                 <p class="form-control">
@@ -120,23 +120,18 @@
                     <output for="steps" id="selected-steps">{{ form.steps.data }}</output>
                 </p>
 
-                <div class="form-control">
-                    <p class="form-label">Width x Height</p>
-                    <div class="input-group mb-3">
-                        {{ form.width(size=12, class_='form-control') }}
-                        <span class="input-group-text">X</span>
-                        {{ form.height(size=12, class_='form-control') }}
-                    </div>
-                </div>
-
                 <p></p>
-                <div class="d-grid gap-2 col-6 mx-auto">{{ form.submit(class_='btn btn-primary') }}</div>
+                <div class="d-grid gap-2 col-6 mx-auto">{{ form.submit(onclick="startRat", class_='btn btn-primary') }}</div>
             </form>
         </div>
-        <div style="flex-grow: 1; margin-left: 30px;">
-            <img style="width: 100%;" src="static\ref1.png">
-        </div>
-    </div>
 
+        <div style="flex-grow: 1; margin-left: 30px;">
+            <img id="ratartisimo" style="width: 100%;" src="static\clean.png">
+        </div>
+
+    </div>
+    <script>
+
+    </script>
 
 {% endblock %}

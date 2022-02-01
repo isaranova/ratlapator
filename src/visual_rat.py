@@ -13,12 +13,13 @@ class VisualRat:
         self.rat = Rat(color_amounts, speed, size, frame_size)
         self.frame_size = frame_size
         self.rat_size = size
+        self.current_folder = os.path.abspath(os.path.curdir)
 
-        self.left_front_path = os.path.join('img', 'left-front-pawprint.png')
-        self.right_front_path = os.path.join('img', 'right-front-pawprint.png')
-        self.left_back_path = os.path.join('img', 'left-back-pawprint.png')
-        self.right_back_path = os.path.join('img', 'right-back-pawprint.png')
-        self.tail_path = os.path.join('img', 'tail.png')
+        self.left_front_path = os.path.join('static', 'left-front-pawprint.png')
+        self.right_front_path = os.path.join('static', 'right-front-pawprint.png')
+        self.left_back_path = os.path.join('static', 'left-back-pawprint.png')
+        self.right_back_path = os.path.join('static', 'right-back-pawprint.png')
+        self.tail_path = os.path.join('static', 'tail.png')
 
     def pick_color(self):
         amounts_sum = sum(self.rat.color_amounts.values())
@@ -57,7 +58,7 @@ class VisualRat:
         image_size = image.size
         number = randint(1, ref_count)
         ref_path = f'{ref_name}{number}.{ref_type}'
-        ref_path = os.path.join('img', ref_path)
+        ref_path = os.path.join('static', ref_path)
 
         mask = Image.open(ref_path).convert('RGBA')
         angle = randint(0, 360)

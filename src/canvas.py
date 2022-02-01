@@ -56,13 +56,13 @@ class Canvas:
 
         return bounds
 
-    def show_canvas_with_crop_box(self, crop_box=None):
+    def save_canvas_with_crop_box(self, save_path, crop_box=None):
         bounds = self.get_crop_box_bounds(crop_box)
         output_canvas = self.canvas.copy()
         img1 = ImageDraw.Draw(output_canvas)
         img1.rectangle(bounds, outline='red')
 
-        output_canvas.show()
+        output_canvas.save(save_path)
 
     def save_cropped(self, crop_box=None):
         box = self.get_crop_box_bounds(crop_box)

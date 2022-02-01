@@ -3,7 +3,7 @@ from random import randint
 from math import cos, sin, radians
 
 import numpy as np
-import config
+from . import config
 
 
 class Rat:

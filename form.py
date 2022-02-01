@@ -52,10 +52,7 @@ class RatForm(FlaskForm):
     color = FormField(ColorForm)
 
     speed = IntegerRangeField(validators=[NumberRange(min=1, max=5)], default=3)
-    size = IntegerRangeField(validators=[NumberRange(min=50, max=150)], default=100)
-    steps = IntegerRangeField(validators=[NumberRange(min=1, max=10)], default=5)
-
-    width = IntegerField()
-    height = IntegerField()
+    size = IntegerRangeField(validators=[NumberRange(min=5, max=15)], default=10)
+    steps = IntegerRangeField(validators=[NumberRange(min=0, max=10)], default=5)
 
     submit = SubmitField()
