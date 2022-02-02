@@ -1,4 +1,4 @@
-from flask_wtf import FlaskForm
+from flask_wtf import FlaskForm, Form
 from wtforms import FormField, IntegerField, IntegerRangeField, SelectMultipleField, SubmitField
 from wtforms.validators import DataRequired, NumberRange
 
@@ -26,15 +26,13 @@ COLORS = {
 }
 
 
-class ColorForm(FlaskForm):
+class ColorForm(Form):
     black = IntegerField(validators=[NumberRange(min=0, max=255)], default=0)
     navy = IntegerField(validators=[NumberRange(min=0, max=255)], default=0)
-    teal = IntegerField(validators=[NumberRange(min=0, max=255)], default=0)
     green = IntegerField(validators=[NumberRange(min=0, max=255)], default=0)
 
     brown = IntegerField(validators=[NumberRange(min=0, max=255)], default=0)
     blue = IntegerField(validators=[NumberRange(min=0, max=255)], default=0)
-    cyan = IntegerField(validators=[NumberRange(min=0, max=255)], default=0)
     lime = IntegerField(validators=[NumberRange(min=0, max=255)], default=0)
 
     purple = IntegerField(validators=[NumberRange(min=0, max=255)], default=0)

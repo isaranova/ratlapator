@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
+from flask_wtf.csrf import CSRFProtect
 from config import Config
 from form import RatForm
 
@@ -8,15 +9,43 @@ from src.canvas import Canvas
 app = Flask(__name__)
 app.config.from_object(Config)
 save_path = os.path.join('static', 'ref1.png')
+CSRFProtect(app)
+
+
+steps_counter = 0
+canvas = Canvas(1000, 800)
+
+
+def get_img_string():
+    global canvas
+    img = canvas.get_encoded_img()
+    string_img = f"data:image/png;base64,{img.decode()}"
+    return string_img
 
 
 @app.route('/',  methods=['GET', 'POST'])
 def index():
+    global steps_counter
+    global canvas
     form = RatForm()
-    canvas = Canvas(1000, 1000)
-    form.validate_on_submit()
-    if request.method == 'POST':
-        crop_box = [form.width.data, form.height.data]
+
+    if (request.method == "POST" and steps_counter > 0) or (request.get_json() and 'reset' in request.get_json()):
+        if 'reset' in request.get_json():
+            canvas.reset_canvas()
+            steps_counter = 0
+        else:
+            canvas.move_rats()
+            canvas.print_rats()
+            steps_counter -= 1
+            print(steps_counter)
+            print(canvas.rats[0].rat.color_amounts)
+        results = {
+            'image': get_img_string(),
+            'steps': steps_counter,
+        }
+        return jsonify(results)
+
+    elif form.validate_on_submit():
         colors = {
             'Green': [(0, 128, 0), form.color.green.data],
             'Lime': [(0, 255, 0), form.color.lime.data],
@@ -34,18 +63,22 @@ def index():
             'Magenta': [(255, 0, 255), form.color.magenta.data],
 
             'Navy': [(0, 0, 128), form.color.navy.data],
-            'Blue': [(0, 0, 255), form.color.blue.data],
-            'Teal': [(0, 128, 128), form.color.teal.data],
-            'Cyan': [(0, 255, 255), form.color.cyan.data]
+            'Blue': [(0, 0, 255), form.color.blue.data]
         }
         color_amounts = {
             values[0] + tuple([255]): values[1] for color_name, values in colors.items() if values[1] != 0
         }
+
+        if not color_amounts:
+            return render_template('main.html', form=form, image_name=get_img_string(), no_color=True, steps=0)
+
+        canvas.reset_rats()
+        steps_counter = form.steps.data
         canvas.add_rat(color_amounts, form.speed.data, form.size.data / 10)
         canvas.print_rats()
-        canvas.save_canvas_with_crop_box(save_path=save_path)
+        return render_template('main.html', form=form, image_name=get_img_string(), no_color=False, steps=steps_counter)
 
-    return render_template('main.html', form=form)
+    return render_template('main.html', form=form, image_name=get_img_string(), no_color=False, steps=0)
 
 
 if __name__ == "__main__":

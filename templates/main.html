@@ -11,7 +11,7 @@
     }
 
     function stepsUpdate(steps) {
-        document.querySelector('#selected-steps').value = steps;
+        document.querySelector('#selected-steps').value = parseInt(steps) + 1;
     }
     </script>
     <style type="text/css">
@@ -36,12 +36,11 @@
 
     <div style="display: flex;">
         <div style="width: 500; margin-left: 15px;">
-            <h1 class="title">Make your own RAT art</h1>
             <form action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
-
+                <p></p>
                 <div class="form-control">
-                    <p class="form-label">Set color amounts:</p>
+                    <p class="form-label">Set color amounts:<br></p>
                 <table class="tg table table-borderless table-sm">
                     <colgroup>
                         <col style="width: 80px">
@@ -86,12 +85,6 @@
                         <td class="tg-0lax">{{ form.color.lime(size=5, class_='form-control') }}</td>
                     </tr>
                     <tr>
-                        <td class="tg-8w33">Teal</td>
-                        <td class="tg-0lax">{{ form.color.teal(size=5, class_='form-control') }}</td>
-                        <td class="tg-j7ib">Cyan</td>
-                        <td class="tg-0lax">{{ form.color.cyan(size=5, class_='form-control') }}</td>
-                    </tr>
-                    <tr>
                         <td class="tg-eezr">Navy</td>
                         <td class="tg-0lax">{{ form.color.navy(size=5, class_='form-control') }}</td>
                         <td class="tg-5rj3">Blue</td>
@@ -99,38 +92,124 @@
                     </tr>
                     </tbody>
                 </table>
+                    <p class="fst-italic fw-light" style="float: right;">
+                        i: Select color amounts for rat pawprints from 0 to 255.
+                    </p>
+                    <br>
                 </div>
                 <p></p>
 
                 <p class="form-control">
                     {{ form.speed.label(class_='form-label') }}<br>
                     {{ form.speed(oninput="speedUpdate(value)", class_='form-range') }}<br>
-                    <output for="speed" id="selected-speed">{{ form.speed.data }}</output>
+                    <output for="speed" id="selected-speed">{{ form.speed.data }}</output><br>
+                    <span class="fst-italic fw-light" style="float: right;">i: Choose how often does rat change direction.</span><br>
                 </p>
 
                 <p class="form-control">
                     {{ form.size.label(class_='form-label') }}<br>
                     {{ form.size(oninput="sizeUpdate(value)", class_='form-range') }}<br>
-                    <output for="size" id="selected-size">{{ form.size.data / 10 }}</output>
+                    <output for="size" id="selected-size">{{ form.size.data / 10 }}</output><br>
+                    <span class="fst-italic fw-light" style="float: right;">i: Choose how big your rat is.</span><br>
                 </p>
 
                 <p class="form-control">
                     {{ form.steps.label(class_='form-label') }}<br>
                     {{ form.steps(oninput="stepsUpdate(value)", class_='form-range') }}<br>
-                    <output for="steps" id="selected-steps">{{ form.steps.data }}</output>
+                    <output for="steps" id="selected-steps">{{ form.steps.data + 1 }}</output><br>
+                    <span class="fst-italic fw-light" style="float: right;">i: Choose how many steps will the rat do.</span><br>
                 </p>
 
-                <p></p>
-                <div class="d-grid gap-2 col-6 mx-auto">{{ form.submit(onclick="startRat", class_='btn btn-primary') }}</div>
+                {% for field, errors in form.errors.items() %}
+                <div class="text-danger">
+                    {{ form[field].label }}: {{ ', '.join(errors) }}
+                </div>
+                {% endfor %}
+
+                {% if no_color %}
+                    <div class="text-danger">
+                        <p>No colors were selected, rat art won't be generated.</p>
+                    </div>
+                {% endif %}
+
+                <div class="d-grid gap-2 d-md-block">
+                    <button id="reset_canvas" class="btn btn-danger" onclick="resetCanvas">Reset canvas</button>
+                    {{ form.submit(class_='btn btn-primary') }}
+                </div>
+
+                <div class="text-secondary">
+                {% if steps > 0 %}
+                    <p id="steps_counter" title="{{ steps }}">{{ steps }} remaining! Please wait...</p>
+                {% else %}
+                    <p id="steps_counter" title="0"></p>
+                {% endif %}
+                </div>
             </form>
         </div>
 
         <div style="flex-grow: 1; margin-left: 30px;">
-            <img id="ratartisimo" style="width: 100%;" src="static\clean.png">
+            <img src="{{ 'static\clean.png' if not image_name else image_name }}" id="ratartisimo" style="width: 100%; float: left;">
         </div>
 
     </div>
     <script>
+        var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+        })
+
+        document.getElementById("reset_canvas").addEventListener("click", function(event) {
+            console.log(42);
+            event.preventDefault();
+            document.getElementById("steps_counter").title = "0";
+            $.ajax({
+                  type: "POST",
+                  url: "/",
+                  data: JSON.stringify({"reset": "1"}),
+                  contentType: "application/json;charset=utf-8",
+                  dataType: 'json',
+                  success: function(result) {
+                    document.getElementById("ratartisimo").src = result.image;
+                    document.getElementById("steps_counter").innerText = "";
+                    document.getElementById("submit").disabled = false;
+                    document.getElementById("reset_canvas").disabled = false;
+                  }
+            });
+        });
+
+        document.getElementById("ratartisimo").addEventListener("load", makeStep);
+        function makeStep() {
+            var steps = document.getElementById("steps_counter").title;
+            console.log(steps);
+            if (steps != "0") {
+                $.ajax({
+                  type: "POST",
+                  url: "/",
+                  data: JSON.stringify({"steps": steps}),
+                  contentType: "application/json;charset=utf-8",
+                  dataType: 'json',
+                  success: function(result) {
+                    document.getElementById("ratartisimo").src = result.image;
+                    document.getElementById("steps_counter").title = result.steps;
+                    if (result.steps != "0") {
+                        document.getElementById("steps_counter").innerText = result.steps + " remaining! Please wait...";
+                        document.getElementById("submit").disabled = true;
+                        document.getElementById("reset_canvas").disabled = true;
+                    }
+                    else {
+                        document.getElementById("steps_counter").innerText = "";
+                        document.getElementById("submit").disabled = false;
+                        document.getElementById("reset_canvas").disabled = false;
+                    }
+                  }
+                });
+            }
+        }
 
     </script>
 

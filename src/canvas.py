@@ -1,5 +1,7 @@
 from random import randint
 from PIL import Image, ImageDraw
+import base64
+from io import BytesIO
 
 from src.visual_rat import VisualRat
 
@@ -56,6 +58,13 @@ class Canvas:
 
         return bounds
 
+    def get_encoded_img(self):
+        buffered = BytesIO()
+        to_be_saved = self.canvas.copy()
+        to_be_saved.save(buffered, format="PNG")
+        encoded = base64.b64encode(buffered.getvalue())
+        return encoded
+
     def save_canvas_with_crop_box(self, save_path, crop_box=None):
         bounds = self.get_crop_box_bounds(crop_box)
         output_canvas = self.canvas.copy()
@@ -69,3 +78,8 @@ class Canvas:
         box = box[0] + box[1]
         cropped = self.canvas.copy().crop(box)
         cropped.save(f'img\\cropped{self.number}.png')
+
+    def reset_canvas(self):
+        self.canvas = Image.new('RGBA', tuple(self.frame_size), 'white')
+        self.rats = []
+        self.number = 0
