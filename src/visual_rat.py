@@ -81,7 +81,9 @@ class VisualRat:
 
         # blobs
         blob_prob = randint(0, 100)
-        if blob_prob > 30 or 'tail' in img_path:
+        if 'tail' in img_path:
+            image = self.get_mask(image, 'tailblob', 4, 'png')
+        elif blob_prob > 30:
             image = self.get_mask(image, 'blob', 5, 'png')
 
         # rotate
@@ -96,7 +98,6 @@ class VisualRat:
 
         angle = randint(int(angle) - 15, int(angle) + 15)
         image = image.rotate(angle, expand=True, fillcolor=(255, 255, 255, 0))
-
         # color and transparency
         color = self.pick_color()
         transparency = self.rat.get_color_amount(color)

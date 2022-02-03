@@ -8,12 +8,11 @@ from src.canvas import Canvas
 
 app = Flask(__name__)
 app.config.from_object(Config)
-save_path = os.path.join('static', 'ref1.png')
 CSRFProtect(app)
 
 
 steps_counter = 0
-canvas = Canvas(1000, 800)
+canvas = Canvas(1000, 600)
 
 
 def get_img_string():

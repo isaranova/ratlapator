@@ -1,5 +1,5 @@
 import math
-from random import randint
+from random import randint, choice
 from math import cos, sin, radians
 
 import numpy as np
@@ -35,11 +35,15 @@ class Rat:
             [self.frame_size[0] // 2, self.frame_size[1]],
             [self.frame_size[0], self.frame_size[1] // 2],
             [self.frame_size[0], 0], [0, self.frame_size[1]],
-            [self.frame_size[0] // 2, 0], [0, self.frame_size[1] // 2]
+            [self.frame_size[0] // 2, 0], [0, self.frame_size[1] // 2],
+            [0, self.frame_size[1] // 4], [0, self.frame_size[1] // 4 * 3],
+            [self.frame_size[0], self.frame_size[1] // 4], [self.frame_size[0], self.frame_size[1] // 4 * 3],
+            [self.frame_size[0] // 4, 0], [self.frame_size[0] // 4 * 3, 0],
+            [self.frame_size[0] // 4, self.frame_size[1]], [self.frame_size[0] // 4 * 3, self.frame_size[1]],
         ]
 
         distances = [math.dist([self.x, self.y], corner) for corner in corners]
-        max_distance = max(distances)
+        max_distance = choice(sorted(distances)[:4])
         max_distance_id = distances.index(max_distance)
         self.direction = corners[max_distance_id]
         self.direction_timer = randint(2, 4)  # 2-10 rat steps until change of direction
@@ -87,7 +91,8 @@ class Rat:
     def get_body_positions(self):
         horizontal_vec = self.get_horizontal_vec()
         angle = self.get_rotation_angle(horizontal_vec)
-
+        if math.isnan(angle):
+            angle = 180
         if self.direction[1] > self.y:
             angle = 360 - angle
             
@@ -109,6 +114,7 @@ class Rat:
 
     @staticmethod
     def get_angle_between_vectors(vec1, vec2):
+
         unit_vector_1 = vec1 / np.linalg.norm(vec1)
         unit_vector_2 = vec2 / np.linalg.norm(vec2)
         dot_product = np.dot(unit_vector_1, unit_vector_2)
