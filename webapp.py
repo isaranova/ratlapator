@@ -1,45 +1,67 @@
-import os
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
+from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
 from config import Config
 from form import RatForm
+
 
 from src.canvas import Canvas
 
 app = Flask(__name__)
 app.config.from_object(Config)
 CSRFProtect(app)
+Session(app)
 
 
-steps_counter = 0
-canvas = Canvas(1000, 600)
-
-
-def get_img_string():
-    global canvas
+def get_img_string(canvas):
     img = canvas.get_encoded_img()
     string_img = f"data:image/png;base64,{img.decode()}"
     return string_img
 
 
+def get_canvas(img):
+    canvas = Canvas(1000, 600)
+
+    if 'rat' in session:
+        canvas.add_rat(*session['rat'])
+        print(session['rat'])
+
+    canvas.set_canvas_from_encoded_img(img)
+    return canvas
+
+
 @app.route('/',  methods=['GET', 'POST'])
 def index():
-    global steps_counter
-    global canvas
+    if 'steps_counter' not in session:
+        session['steps_counter'] = 0
+    if 'img' not in session:
+        canvas = Canvas(1000, 600)
+        session['img'] = get_img_string(canvas)
+
+    steps_counter = session['steps_counter']
+    img = session['img']
+    canvas = get_canvas(img)
     form = RatForm()
 
     if (request.method == "POST" and steps_counter > 0) or (request.get_json() and 'reset' in request.get_json()):
-        if 'reset' in request.get_json():
+        if request.get_json() and 'reset' in request.get_json():
             canvas.reset_canvas()
             steps_counter = 0
+
         else:
             canvas.move_rats()
             canvas.print_rats()
             steps_counter -= 1
-            print(steps_counter)
-            print(canvas.rats[0].rat.color_amounts)
+
+            session['rat'] = [
+                canvas.get_color_amounts(), *canvas.get_rat_speed_size(), *canvas.get_rat_position_direction()
+            ]
+
+        session['steps_counter'] = steps_counter
+        session['img'] = get_img_string(canvas)
+
         results = {
-            'image': get_img_string(),
+            'image': get_img_string(canvas),
             'steps': steps_counter,
         }
         return jsonify(results)
@@ -69,15 +91,24 @@ def index():
         }
 
         if not color_amounts:
-            return render_template('main.html', form=form, image_name=get_img_string(), no_color=True, steps=0)
+            return render_template('main.html', form=form, image_name=get_img_string(canvas), no_color=True, steps=0)
 
         canvas.reset_rats()
-        steps_counter = form.steps.data
+        steps_counter = int(form.steps.data)
         canvas.add_rat(color_amounts, form.speed.data, form.size.data / 10)
         canvas.print_rats()
-        return render_template('main.html', form=form, image_name=get_img_string(), no_color=False, steps=steps_counter)
+        session['rat'] = [
+            canvas.get_color_amounts(), form.speed.data, form.size.data / 10, *canvas.get_rat_position_direction()
+        ]
 
-    return render_template('main.html', form=form, image_name=get_img_string(), no_color=False, steps=0)
+        session['steps_counter'] = steps_counter
+        print(steps_counter)
+        session['img'] = get_img_string(canvas)
+        return render_template(
+            'main.html', form=form, image_name=get_img_string(canvas), no_color=False, steps=steps_counter
+        )
+
+    return render_template('main.html', form=form, image_name=get_img_string(canvas), no_color=False, steps=0)
 
 
 if __name__ == "__main__":

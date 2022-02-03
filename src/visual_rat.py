@@ -9,8 +9,12 @@ from src.rat import Rat
 
 
 class VisualRat:
-    def __init__(self, color_amounts, speed, size, frame_size):
+    def __init__(self, color_amounts, speed, size, frame_size, x=None, y=None, direction=None, direction_timer=None):
         self.rat = Rat(color_amounts, speed, size, frame_size)
+
+        if x is not None and y is not None and direction is not None and direction_timer is not None:
+            self.rat.set_position_direction(x, y, direction, direction_timer)
+
         self.frame_size = frame_size
         self.rat_size = size
         self.current_folder = os.path.abspath(os.path.curdir)

@@ -1,6 +1,6 @@
 pillow
 numpy
 pathos
-frozen-flask
 flask
 flask-wtf
+Flask-Session

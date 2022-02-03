@@ -46,7 +46,13 @@ class Rat:
         max_distance = choice(sorted(distances)[:4])
         max_distance_id = distances.index(max_distance)
         self.direction = corners[max_distance_id]
-        self.direction_timer = randint(2, 4)  # 2-10 rat steps until change of direction
+        self.direction_timer = randint(2, 5)  # 2-10 rat steps until change of direction
+
+    def set_position_direction(self, x, y, direction, direction_timer):
+        self.x = x
+        self.y = y
+        self.direction = direction
+        self.direction_timer = direction_timer
 
     def _set_color_amount(self, color_amounts):
         self.color_amounts = dict()

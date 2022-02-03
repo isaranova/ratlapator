@@ -13,7 +13,7 @@ class Canvas:
         self.rats = list()
         self.number = 0
 
-    def add_rat(self, color_amounts, speed, size):
+    def add_rat(self, color_amounts, speed, size, x=None, y=None, direction=None, direction_timer=None):
         """
         Adds rat painter to the canvas.
 
@@ -21,11 +21,19 @@ class Canvas:
         :param speed: rat's speed, from 1 to 5
         :param size: rat's size, from 0.5 to 1.5
         """
-        rat = VisualRat(color_amounts, speed, size, self.frame_size)
+        rat = VisualRat(color_amounts, speed, size, self.frame_size, x, y, direction, direction_timer)
         self.rats.append(rat)
 
     def reset_rats(self):
         self.rats = list()
+
+    def get_rat_speed_size(self):
+        # only for one rat atm
+        return [self.rats[0].rat.speed, self.rats[0].rat.size]
+
+    def get_rat_position_direction(self):
+        # only for one rat atm
+        return [self.rats[0].rat.x, self.rats[0].rat.y, self.rats[0].rat.direction, self.rats[0].rat.direction_timer]
 
     def print_rats(self):
         for rat in self.rats:
@@ -37,26 +45,14 @@ class Canvas:
 
                 self.canvas.paste(pawprint[0], pawprint[1], pawprint[0])
 
-            # dot = Image.open('img\\dot.png')
-            # self.canvas.paste(dot, self.rats[0].rat.direction, dot)
-
     def move_rats(self):
         for rat in self.rats:
             rat.do_rat_step()
         self.number += 1
 
-    def get_crop_box_bounds(self, crop_box=None):
-        if not crop_box:
-            crop_box = self.frame_size
-
-        center = [self.frame_size[0] // 2, self.frame_size[1] // 2]
-
-        bounds = [
-            (int(center[0] - crop_box[0] / 2), int(center[1] - crop_box[1] / 2)),
-            (int(center[0] + crop_box[0] / 2), int(center[1] + crop_box[1] / 2))
-        ]
-
-        return bounds
+    def get_color_amounts(self):
+        # only for one rat atm
+        return self.rats[0].rat.color_amounts
 
     def get_encoded_img(self):
         buffered = BytesIO()
@@ -65,19 +61,9 @@ class Canvas:
         encoded = base64.b64encode(buffered.getvalue())
         return encoded
 
-    def save_canvas_with_crop_box(self, save_path, crop_box=None):
-        bounds = self.get_crop_box_bounds(crop_box)
-        output_canvas = self.canvas.copy()
-        img1 = ImageDraw.Draw(output_canvas)
-        img1.rectangle(bounds, outline='red')
-
-        output_canvas.save(save_path)
-
-    def save_cropped(self, crop_box=None):
-        box = self.get_crop_box_bounds(crop_box)
-        box = box[0] + box[1]
-        cropped = self.canvas.copy().crop(box)
-        cropped.save(f'img\\cropped{self.number}.png')
+    def set_canvas_from_encoded_img(self, data):
+        data = data.replace('data:image/png;base64', '')
+        self.canvas = Image.open(BytesIO(base64.b64decode(data)))
 
     def reset_canvas(self):
         self.canvas = Image.new('RGBA', tuple(self.frame_size), 'white')
