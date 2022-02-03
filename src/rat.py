@@ -43,7 +43,7 @@ class Rat:
         ]
 
         distances = [math.dist([self.x, self.y], corner) for corner in corners]
-        max_distance = choice(sorted(distances)[:4])
+        max_distance = choice(sorted(distances, reverse=True)[:4])
         max_distance_id = distances.index(max_distance)
         self.direction = corners[max_distance_id]
         self.direction_timer = randint(2, 5)  # 2-10 rat steps until change of direction
